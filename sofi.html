@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOFI 20% Profit Velocity Strategy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #0b1020;
+      --bg-card: #121826;
+      --accent: #22c55e;
+      --accent-soft: #4ade80;
+      --accent-secondary: #38bdf8;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2933;
+      --danger: #f97373;
+      --radius-lg: 20px;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.45);
+      --max-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 45%, #000 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.75));
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .nav {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .brand-pill {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #bbf7d0, #22c55e 45%, #16a34a 80%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.8rem;
+      color: #022c22;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      width: 0;
+      background: linear-gradient(to right, var(--accent), var(--accent-secondary));
+      transition: width 0.2s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .hero {
+      max-width: var(--max-width);
+      margin: 24px auto 0;
+      padding: 40px 20px 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (max-width: 880px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      header {
+        position: static;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+
+    .hero-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      color: var(--accent-soft);
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .hero-title span.highlight {
+      background: linear-gradient(120deg, #22c55e, #a855f7, #38bdf8);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin-bottom: 18px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+    }
+
+    .badge--accent {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: var(--accent-soft);
+      background: rgba(22, 163, 74, 0.08);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 9px 18px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease,
+        border-color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, #22c55e, #16a34a);
+      color: #022c22;
+      box-shadow: 0 16px 45px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 24px 60px rgba(34, 197, 94, 0.5);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(15, 23, 42, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .hero-panel {
+      background: radial-gradient(circle at top, rgba(34, 197, 94, 0.16), transparent 55%),
+        var(--bg-card);
+      border-radius: 28px;
+      padding: 22px 20px 18px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .hero-panel-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .metrics-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
+      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.14), transparent 55%),
+        #020617;
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-main {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .metric-caption {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .metric-main--accent {
+      color: var(--accent-soft);
+    }
+
+    .hero-mini-note {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .section {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    .section-header {
+      margin-bottom: 18px;
+    }
+
+    .section-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      color: var(--accent-secondary);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .section-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      max-width: 640px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.6);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .card-step {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--accent-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .card-body {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .chip--accent {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: var(--accent-soft);
+    }
+
+    ul {
+      list-style: disc;
+      padding-left: 18px;
+      margin-top: 4px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      padding: 20px;
+      border-top: 1px solid rgba(15, 23, 42, 0.9);
+      background: #020617;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="nav">
+        <div class="brand">
+          <div class="brand-pill">$</div>
+          <span>Profit Velocity · SOFI 20% Protocol</span>
+        </div>
+        <div class="nav-links">
+          <a href="#engine">Strategy</a>
+          <a href="#why20">Why 20%</a>
+          <a href="#math">Example</a>
+        </div>
+        <div class="nav-cta">Educational · Not Financial Advice</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div>
+          <div class="hero-kicker">Sofi Options · Leap + Covered Call</div>
+          <h1 class="hero-title">
+            Why <span class="highlight">20% Wins</span> Beat Waiting for Expiration
+          </h1>
+          <p class="hero-subtitle">
+            I use a long-dated SOFI LEAP and harvest quick 20% profits on covered calls.
+            Closing early lets me recycle capital, stack small wins, and grow income more
+            like a professional options income fund.
+          </p>
+          <div class="hero-badges">
+            <span class="badge badge--accent">20% Harvest Rule</span>
+            <span class="badge">Leap + Covered Call Engine</span>
+            <span class="badge">Cash-Flow Focused</span>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="document.getElementById('engine').scrollIntoView({behavior:'smooth'})">
+              View the 4-Step Engine →
+            </button>
+            <button class="btn btn-ghost" onclick="document.getElementById('why20').scrollIntoView({behavior:'smooth'})">
+              Why 20% Accelerates Growth
+            </button>
+          </div>
+          <div class="hero-meta">
+            Built for personal use and education. Numbers are examples only.
+          </div>
+        </div>
+
+        <!-- HERO RIGHT PANEL -->
+        <aside class="hero-panel">
+          <div class="hero-panel-title">20% Profit Velocity Snapshot</div>
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-label">Cycle Speed</div>
+              <div class="metric-main metric-main--accent">3–5 Days</div>
+              <div class="metric-caption">vs. 30+ days holding to expiration</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Frequency</div>
+              <div class="metric-main metric-main--accent">3–5× Faster</div>
+              <div class="metric-caption">More covered calls per month from one LEAP</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Risk Profile</div>
+              <div class="metric-main">Lower Gamma</div>
+              <div class="metric-caption">Exit before the wild swings near expiration</div>
+            </div>
+          </div>
+          <p class="hero-mini-note">
+            Core idea: take quick, repeatable wins around 20% on the covered call,
+            then immediately resell another call on the same SOFI LEAP.
+          </p>
+        </aside>
+      </section>
+
+      <!-- SECTION: ENGINE -->
+      <section id="engine" class="section">
+        <div class="section-header">
+          <div class="section-kicker">Part 1 · My SOFI Options Engine</div>
+          <h2 class="section-title">How I Turn One SOFI LEAP Into an Income Stream</h2>
+          <p class="section-subtitle">
+            This is the 4-step structure I use: buy a long-term SOFI LEAP, sell covered
+            calls against it, grab 20% profit, and repeat. The LEAP stays long-term. The calls
+            provide the cash flow.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <!-- Step 1 -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">1</div>
+              <div class="card-title">Buy the SOFI LEAP</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>I start by buying a long-dated SOFI call option (my LEAP).</li>
+                <li>This behaves like synthetic share ownership with a much lower
+                    upfront cost than 100 shares.</li>
+                <li>It becomes the foundation I use to sell covered calls.</li>
+              </ul>
+              <div class="chip chip--accent">Example: SOFI $2 Call · Jan 2026</div>
+            </div>
+          </article>
+
+          <!-- Step 2 -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">2</div>
+              <div class="card-title">Sell a Covered Call</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>Because the LEAP behaves like shares, I can sell a short-term
+                    covered call on SOFI.</li>
+                <li>This brings in premium up front and turns the LEAP into an
+                    income-producing asset.</li>
+              </ul>
+              <div class="chip">Example: Sell SOFI $8.50 Call (near-term)</div>
+            </div>
+          </article>
+
+          <!-- Step 3 -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">3</div>
+              <div class="card-title">Close Around 20% Profit</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>When the covered call reaches about <strong>20% profit</strong>,
+                    I buy it back and close the position.</li>
+                <li>I don’t wait until expiration. I choose a fast, controlled win
+                    over hoping for bigger but slower gains.</li>
+              </ul>
+              <div class="chip chip--accent">Rule: Hit ~20% → Harvest the win</div>
+            </div>
+          </article>
+
+          <!-- Step 4 -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">4</div>
+              <div class="card-title">Repeat the Cycle</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>After closing the call, I immediately sell another covered call
+                    on the same LEAP.</li>
+                <li>Each cycle adds more premium while the LEAP stays in place as a
+                    long-term position.</li>
+              </ul>
+              <div class="chip">Leap stays · Calls rotate</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION: WHY 20% -->
+      <section id="why20" class="section">
+        <div class="section-header">
+          <div class="section-kicker">Part 2 · Why 20% Accelerates Growth</div>
+          <h2 class="section-title">How Quick 20% Wins Boost My Income Velocity</h2>
+          <p class="section-subtitle">
+            Taking profit at 20% and repeating the covered call cycle gives me faster
+            rotation, more trades, and smoother equity curves than simply holding
+            calls to expiration.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <!-- A: Faster Rotation -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">A</div>
+              <div class="card-title">Faster Rotation</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>20% targets often hit within a few days instead of 30+ days.</li>
+                <li>My LEAP is not trapped in one trade; it’s free to earn multiple
+                    times per month.</li>
+              </ul>
+              <div class="chip chip--accent">More cycles = more premium</div>
+            </div>
+          </article>
+
+          <!-- B: Compounding -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">B</div>
+              <div class="card-title">Compounding Premium</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>Every “sell → 20% → close → resell” cycle stacks one small win
+                    on top of the last.</li>
+                <li>Instead of one slow gain, I compound multiple smaller profits
+                    on the same LEAP.</li>
+              </ul>
+              <div class="chip">Stack small wins, not big wishes</div>
+            </div>
+          </article>
+
+          <!-- C: Risk -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">C</div>
+              <div class="card-title">Lower Risk, Higher Consistency</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>Closing early avoids the wild “gamma” swings near expiration.</li>
+                <li>I lock in gains before sharp reversals or surprise moves can
+                    erase them.</li>
+                <li>Fewer big drawdowns = a smoother equity curve and higher
+                    confidence.</li>
+              </ul>
+              <div class="chip chip--accent">Protect the account first</div>
+            </div>
+          </article>
+
+          <!-- D: Rental Property -->
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">D</div>
+              <div class="card-title">My LEAP as a Rental Property</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>I treat the SOFI LEAP like a rental house.</li>
+                <li>The covered call premium is my “rent.”</li>
+                <li>By closing at 20% and re-renting quickly, I maximize cash flow
+                    from a single long-term asset.</li>
+              </ul>
+              <div class="chip">One LEAP · Many “rent checks”</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION: MATH EXAMPLE -->
+      <section id="math" class="section">
+        <div class="section-header">
+          <div class="section-kicker">Part 3 · Simple Example</div>
+          <h2 class="section-title">What a 20% Cycle Can Look Like</h2>
+          <p class="section-subtitle">
+            These numbers are only illustrations, not guarantees. The goal is to
+            show how faster rotations can turn one position into multiple income
+            events.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">1</div>
+              <div class="card-title">Base Trade</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>Sell a SOFI covered call and receive <strong>$20</strong> in premium.</li>
+                <li>20% profit target = <strong>$4</strong>.</li>
+              </ul>
+              <div class="chip">Rule: Close when profit ≈ $4</div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">2</div>
+              <div class="card-title">Rotate Multiple Times</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>If I can do that same $4 win four times in a month:</li>
+                <li><strong>$4 × 4 trades = $16</strong> from the same LEAP.</li>
+              </ul>
+              <div class="chip chip--accent">More than one “monthly” payoff</div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">3</div>
+              <div class="card-title">Compare to Holding</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>Holding one call to expiration might collect $20 once.</li>
+                <li>Rotating quickly can approach or even exceed that, with less
+                    time in the market and more flexibility.</li>
+              </ul>
+              <div class="chip">Fewer hopes · More control</div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header-row">
+              <div class="card-step">4</div>
+              <div class="card-title">Bigger Picture</div>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>Repeat the approach across weeks, months, and different
+                    tickers, and small wins can snowball.</li>
+                <li>The focus is on <strong>steady premium income</strong>, not
+                    home-run trades.</li>
+              </ul>
+              <div class="chip chip--accent">Process over prediction</div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span>
+          Educational example of a SOFI LEAP + covered call + 20% profit-taking process.
+        </span>
+        <span>
+          Not financial advice. Do your own research and manage your own risk.
+        </span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
